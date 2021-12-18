@@ -2,22 +2,27 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CSVDataProcessor {
 
     public static String DATASET_CSV1 = "dataset1.csv";
-    public static String DATASET_CSV2 = "dataset1.csv";
+    public static String DATASET_CSV2 = "dataset2.csv";
 
     public static String HEADER_FIRSTNAME = "first_name";
     public static String HEADER_LASTNAME = "last_name";
     public static String HEADER_PRICE = "price";
     public static String HEADER_ABOVE100 = "above_100";
+    public static String PROCESSED_FILE_NAME= "\\Processed.csv";
 
-    public static String DELIMITTER_SPACE = " ";
+    public static String DELIMITER_SPACE = " ";
 
     public static void main(String args[]) {
         processData();
@@ -47,34 +52,30 @@ public class CSVDataProcessor {
                 if(!data[0].isEmpty()){
                     processedDataset = new String[4];
                     // First Name
-                    processedDataset[0]  = data[0].substring(0,data[0].lastIndexOf(DELIMITTER_SPACE));
+                    processedDataset[0]  = data[0].substring(0,data[0].lastIndexOf(DELIMITER_SPACE));
                     // Last Name
-                    processedDataset[1]  = data[0].substring(data[0].lastIndexOf(DELIMITTER_SPACE));
+                    processedDataset[1]  = data[0].substring(data[0].lastIndexOf(DELIMITER_SPACE));
                     // Price. Check if there is leading 0 and remove them in price column
                     processedDataset[2] = data[1] .replaceAll("^0+(?=.)", "");
                     // Above 100. Check if above 100 and mark it as true
                     if(Double.parseDouble(data[1]) > 100){
                         processedDataset[3] = "true";
                     }
-                }// If the data row has only name or price
+                }// If the data row has only name
                 else if(!data[1].isEmpty()){
                     // check and process if the data is Name
                     processedDataset = new String[4];
                     // First Name
-                    processedDataset[0]  = data[1].substring(0,data[1].lastIndexOf(DELIMITTER_SPACE));
+                    processedDataset[0]  = data[1].substring(0,data[1].lastIndexOf(DELIMITER_SPACE));
                     // Last Name
-                    processedDataset[1]  = data[1].substring(data[1].lastIndexOf(DELIMITTER_SPACE));
-                    // process if the data is price
-                    //<TBD>
+                    processedDataset[1]  = data[1].substring(data[1].lastIndexOf(DELIMITER_SPACE));
                 }
-
-                System.out.println(processedDataset + " " + linecount);
                 processedDatasetList.add(processedDataset);
             }
         }
 
-        System.out.println(processedDatasetList.size());
-        try (CSVWriter writer = new CSVWriter(new FileWriter("C:\\Users\\simpl\\test.csv"))) {
+        Path resourceDirectory = Paths.get("src","main","resources").toAbsolutePath();
+        try (CSVWriter writer = new CSVWriter(new FileWriter(resourceDirectory.toString() + PROCESSED_FILE_NAME))) {
             writer.writeAll(processedDatasetList);
         } catch (Exception e) {
             e.printStackTrace();
